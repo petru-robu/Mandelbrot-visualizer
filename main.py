@@ -46,8 +46,8 @@ screen = pygame.display.set_mode((1280, 720))
 clock = pygame.time.Clock()
 plt = Plotter(screen)
 
-xmin, xmax= -2.0, 2.0
-ymin, ymax = -2.0, 2.0
+xmin, xmax= -0.5, 0.5
+ymin, ymax = -0.5, 0.5
 
 start_x, start_y, end_x, end_y = 100, 100, 800, 800
 
@@ -56,7 +56,7 @@ start_x, start_y, end_x, end_y = 100, 100, 800, 800
 map = {}
 for px in range(start_x, end_x):
     for py in range(start_y, end_y):
-        map[(px, py)] = translate(px, start_x, end_x, -2.0, 2.0) + translate(py, start_y, end_y, -2.0, 2.0) * 1j
+        map[(px, py)] = translate(px, start_x, end_x, xmin, xmax) + translate(py, start_y, end_y, ymin, ymax) * 1j
 
 #print(map)
 
