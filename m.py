@@ -23,26 +23,27 @@ class MandelbrotSet:
         return self.max_iterations
 
 class Viewport:
-    def __init__(self, center: complex, width: float, screen: pygame.Surface):
+    def __init__(self, center: complex, world_width: float, view_width: int, view_height: int):
         self.center = center
-        self.width = width
-        self.screen = screen
+        self.world_width = world_width
+        self.view_width = view_width
+        self.view_height = view_height
 
     @property
     def scale(self):
-        return self.width / self.screen.get_width()
+        return self.world_width / self.view_width
 
     @property
-    def height(self):
-        return self.scale * self.screen.get_height()
+    def world_height(self):
+        return self.scale * self.view_height
 
     @property
     def offset(self):
-        return self.center + complex(-self.width, self.height) / 2
+        return self.center + complex(-self.world_width, self.world_height) / 2
 
     def __iter__(self):
-        for y in range(self.screen.get_height()):
-            for x in range(self.screen.get_width()):
+        for y in range(self.view_height):
+            for x in range(self.view_width):
                 yield Pixel(self, x, y)
 
 class Pixel:
@@ -51,17 +52,15 @@ class Pixel:
         self.x = x
         self.y = y
 
-    def render(self, color: pygame.Color):
-        self.viewport.screen.set_at((self.x, self.y), color)
-
     def __complex__(self):
         return (complex(self.x, -self.y) * self.viewport.scale + self.viewport.offset )
 
-
 class UI:
-    def __init__(self, screen):
+    def __init__(self, screen, vp):
         self.screen = screen
+        self.vp = vp
         self.font = pygame.font.Font('arial.ttf', 20)
+
         
     def update_mouse_pos_text(self, pos):
         mx, my = pos.real, pos.imag
@@ -72,19 +71,20 @@ class UI:
 
     def render(self):
         self.screen.blit(self.mouse_pos_text, self.mouse_pos_text_rect)
-
+        
 
 
 class Game:
     def __init__(self):
-        self.screen = pygame.display.set_mode((1000, 1000))
+        self.screen = pygame.display.set_mode((1600, 1000))
         self.clock = pygame.time.Clock()
 
-        self.vp = Viewport(-1 + 0j, 4.0, self.screen)
+        self.vp = Viewport(-1 + 0j, 4.0, 1000, 1000)
         self.mandelbrot = MandelbrotSet(max_iterations=256, escape_radius=1000)
-        self.to_render = []
 
-        self.ui = UI(self.screen)
+        self.ui = UI(self.screen, self.vp)
+
+        self.to_render = []
 
     def change_viewport(self):
         pass
@@ -105,16 +105,18 @@ class Game:
 
             # update
             #self.ui.update_mouse_pos_text(pygame.mouse.get_pos())
-            mx, my = pygame.mouse.get_pos()
-            self.ui.update_mouse_pos_text(complex(Pixel(self.vp, mx, my)))
+            #mx, my = pygame.mouse.get_pos()
+            #self.ui.update_mouse_pos_text(complex(Pixel(self.vp, mx, my)))
 
             # render
             self.screen.fill("black")
 
             for pixel in self.to_render:
-                pixel.render('blue')
+                self.screen.set_at((pixel.x, pixel.y), 'blue')
 
-            self.ui.render()
+            pygame.draw.rect(self.screen, 'red', pygame.Rect(800, 0, 1, 1000 ))
+
+            #self.ui.render()
             
             # update frame
             pygame.display.flip()
