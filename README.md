@@ -33,8 +33,8 @@ Dependency management is handled by **Poetry** for reproducible builds and easy 
 ## Installation & Running
 Clone the repository:
 ```bash
-git clone https://github.com/yourusername/mandelbrot-explorer.git
-cd mandelbrot-explorer
+git clone https://github.com/petru-robu/Mandelbrot-visualizer/
+cd Mandelbrot-visualizer
 ```
 
 Install dependencies using Poetry:
