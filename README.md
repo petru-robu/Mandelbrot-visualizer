@@ -1,5 +1,5 @@
 # Interactive Mandelbrot Explorer
-An interactive Mandelbrot set explorer built in **Python** with **Pygame** — featuring a *zoom selection*, *history mechanism* to navigate back and forth between zoom levels, *smooth coloring* and *palette switching*.
+An interactive [Mandelbrot set](https://en.wikipedia.org/wiki/Mandelbrot_set) explorer built in **Python** with **Pygame** — featuring a *zoom selection*, *history mechanism* to navigate back and forth between zoom levels, *smooth coloring* and *palette switching*.
 
 There is also the possibility of generating an image of the mandelbrot set using **Pillow**. This is separate from the main game window.
 
@@ -8,7 +8,8 @@ Dependency management is handled by **Poetry** for reproducible builds and easy 
 ## Features
 ### 1. Mandelbrot Set
 - Computes the *Mandelbrot set* with adjustable zoom and center.
-- Supports *smooth coloring* (based on escape counts) for visually appealing gradients. Removal of banding artifacts when coloring.
+- Supports *smooth coloring* (based on escape counts) for visually appealing gradients.
+- Removal of [banding artifacts](https://en.wikipedia.org/wiki/Colour_banding) when coloring. You can find more details about this in the resources section.
 - Multiple *color palettes* (grayscale, fire, ocean, psychedelic).
 
 ### 2. History Mechanism
@@ -24,7 +25,26 @@ Dependency management is handled by **Poetry** for reproducible builds and easy 
 ### 3. Speed Optimizations with Numba
 - The escape count algorithm is *JIT-compiled with Numba*.
 - Performance is several times faster than a pure-Python implementation.
-- The use of python *complex* data-type is also avoided as it is slow.
+- The use of python *complex* data-type is also avoided as it is slow. Computation of the escape count is done efficiently like this:
+  
+  ```python
+  @njit(fastmath=True)
+  def escape_count_numba(c_real: float, c_imag: float, max_iter: int, escape_radius_sq: float, smooth: bool) -> float:
+      z_real, z_imag = 0.0, 0.0
+      for i in range(max_iter):
+          temp = z_real * z_real - z_imag * z_imag + c_real
+          z_imag = 2.0 * z_real * z_imag + c_imag
+          z_real = temp
+
+          if z_real * z_real + z_imag * z_imag > escape_radius_sq:
+              if smooth:
+                  modulus = (z_real * z_real + z_imag * z_imag) ** 0.5
+                  return i + 1 - log(log(modulus)) / log(2)
+              return i
+      return max_iter
+  ```
+
+  
 
 ### 4. Poetry Integration
 - Reproducible environment and locked dependencies.
@@ -49,11 +69,11 @@ poetry run mandelbrot
 
 ## Controls
 Key / Action	Description:
-- Left Click + Drag - Select a zoom area
-- [	- Go back to previous snapshot
-- ]	- Go forward to next snapshot
-- 1/2/3/4 - Switch to grayscale/fire/ocean/psychedelic color palette
-- ESC	- Quit program
+- Left Click + Drag Select a zoom area
+- [	Go back to previous snapshot
+- ]	Go forward to next snapshot
+- 1/2/3/4 Switch to grayscale/fire/ocean/psychedelic color palette
+- ESC	Quit program
 
 ## Project Structure
 ```
@@ -64,17 +84,16 @@ Key / Action	Description:
 └── image.py         # Functions for plotting the Mandelbrot set as an image file.
 ```
 
-## Tech Stack
-Python 3.10+
-Pygame – for rendering and user interaction
-NumPy – for array-based computations
-Numba – for JIT acceleration of Mandelbrot calculations
-Poetry – for dependency and environment management
-
-
 ## Future Improvements
 - Fully vectorize drawing functions to eliminate Python loops and speed up rendering.
 - Add saving and loading of favorite views as JSON snapshots.
+
+## Resources 
+- [Smooth shading for the Mandelbrot exterior](https://linas.org/art-gallery/escape/smooth.html)
+- [Pygame](https://www.pygame.org/news)
+- [Numba](https://numba.pydata.org/)
+- [Poetry](https://python-poetry.org/)
+- [Arial](https://font.download/font/arial)
 
 ## License
 MIT License — feel free to use, modify, and redistribute this project.
