@@ -2,11 +2,15 @@
 from dataclasses import dataclass, field
 import pygame
 
+import numpy as np
+from numba import njit
+
 from mandelbrot import MandelbrotSet
 from viewport import Viewport
 import colors
 
 pygame.init()
+
 
 class UI:
     def __init__(self, screen: pygame.Surface):
@@ -111,7 +115,8 @@ class Game:
                 color = palette_fn(instab)
                 
                 self.mandel_surface.set_at((x, y), color)
-        
+
+
     def render_mandel(self):
         self.screen.blit(self.mandel_surface, (0, 0))
 
@@ -147,24 +152,32 @@ class Game:
                     elif event.key == pygame.K_1:
                         if self.history.curr_idx == 0:
                             self.palette_name = "grayscale"
+                            self.vp = Viewport(1000, 1000, 3.5, -0.75)
+                            self.mandel = MandelbrotSet(max_iterations=50, escape_radius=200)
                             self.process_viewport()
                             self.history.snapshots[0].mandel_surface = self.mandel_surface
                             self.history.snapshots = self.history.snapshots[:1]
                     elif event.key == pygame.K_2:
                         if self.history.curr_idx == 0:
                             self.palette_name = "fire"
+                            self.vp = Viewport(1000, 1000, 3.5, -0.75)
+                            self.mandel = MandelbrotSet(max_iterations=50, escape_radius=200)
                             self.process_viewport()
                             self.history.snapshots[0].mandel_surface = self.mandel_surface
                             self.history.snapshots = self.history.snapshots[:1]
                     elif event.key == pygame.K_3:
                         if self.history.curr_idx == 0:
                             self.palette_name = "ocean"
+                            self.vp = Viewport(1000, 1000, 3.5, -0.75)
+                            self.mandel = MandelbrotSet(max_iterations=50, escape_radius=200)
                             self.process_viewport()
                             self.history.snapshots[0].mandel_surface = self.mandel_surface
                             self.history.snapshots = self.history.snapshots[:1]
                     elif event.key == pygame.K_4:
                         if self.history.curr_idx == 0:
                             self.palette_name = "psychedelic"
+                            self.vp = Viewport(1000, 1000, 3.5, -0.75)
+                            self.mandel = MandelbrotSet(max_iterations=50, escape_radius=200)
                             self.process_viewport()
                             self.history.snapshots[0].mandel_surface = self.mandel_surface
                             self.history.snapshots = self.history.snapshots[:1]
@@ -219,5 +232,10 @@ class Game:
             self.clock.tick(60)
         pygame.quit()
 
-g = Game()
-g.run()
+
+def main():
+    g = Game()
+    g.run()
+
+if __name__ == "__main__":
+    main()
