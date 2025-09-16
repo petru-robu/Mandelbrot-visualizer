@@ -61,7 +61,7 @@ Key / Action	Description:
 ├── game.py          # Main entry point with Game class and event loop
 ├── viewport.py      # Viewport class for pixel-to-complex mapping
 ├── mandelbrot.py    # MandelbrotSet class, with Numba-accelerated computations
-└──image.py         # Functions for plotting the Mandelbrot set as an image file.
+└── image.py         # Functions for plotting the Mandelbrot set as an image file.
 ```
 
 ## Tech Stack
